@@ -1,40 +1,9 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-</script>
+import LinkButton from "@/Components/LinkButton.vue";
 
-<script>
-import axios from 'axios';
 
-export default {
-    data(){
-        return {
-            vulnerabilites: [],
-            loading: true,
-            error: null,
-        };
-    },
-    mounted() {
-        this.fetchVulnerabilites();
-    },
-    methods:{
-        async fetchVulnerabilites(){
-            try{
-                const response = await axios.get('http://localhost:8000/api/vulnerabilites');
-                if(response.status === 200){
-                    this.vulnerabilites = response.data.vulnerabilites;
-                    console.log(this.vulnerabilites);
-                }
-            }catch(error){
-                this.error = 'Failed to fetch data';
-                console.error ('Error fetching data', error);
-            }finally {
-                this.loading = false;
-            }
-
-        }
-    }
-}
 </script>
 
 <template>
@@ -44,15 +13,33 @@ export default {
             <div class="relative w-screen max-w-screen-xl">
                 <header class="flex flex-row items-center justify-between py-6 bg-stone-900 px-6 border-b-2 border-stone-700">
                     <div class="flex">
-                        <h1 class="text-2xl text-emerald-400 font-light">Lorem Ipsum</h1>
+                        <h1 class="text-2xl text-emerald-400 font-medium">Threat Web</h1>
                     </div>
-                    <nav v-if="canLogin" class="">
-
-                    </nav>
+<!--                    <nav v-if="canLogin" class="">-->
+<!--                    </nav>-->
                 </header>
 
                 <main class="mt-10">
+<!--                    Data information Status-->
                     <div>
+                        <div class="mx-32 px-14 py-6 bg-stone-800 flex flex-row rounded-2xl">
+                            <div class="w-full flex flex-col gap-2">
+                                <h1 class="text-emerald-500 font-medium text-medium">Data Source</h1>
+                                <h1 class="text-emerald-500 font-medium text-medium">Version</h1>
+                                <h1 class="text-emerald-500 font-medium text-medium">Release Date</h1>
+                                <h1 class="text-emerald-500 font-medium text-medium">Total Data</h1>
+                            </div>
+                            <div class="w-full flex flex-col gap-2">
+                                <h1 class="text-medium">{{ catalogSource }}</h1>
+                                <h1 class="text-medium">{{ catalogVersion }}</h1>
+                                <h1 class="text-medium">{{ catalogDateReleased }}</h1>
+                                <h1 class="text-medium">{{ catalogCount }}</h1>
+                            </div>
+                        </div>
+                    </div>
+
+<!--                    search bar-->
+                    <div class="mt-10">
                         <form @submit.prevent="submitSearch" class="flex flex-row justify-center items-center gap-6">
                             <input
                                 type="text"
@@ -69,33 +56,52 @@ export default {
                     <div class="flex flex-col mt-10 mx-20 gap-8">
 
     <!--                        Card per CVE-->
-                        <div class="flex flex-col gap-2 bg-stone-800 p-8 rounded-2xl border-2 border-stone-800 hover:border-2 hover:border-stone-700">
-                           <div class="flex flex-row justify-between">
-                               <h1 class="text-white font-bold text-3xl hover:text-stone-300">
-                                    {{vulnerabilites}}
-                               </h1>
-                               <PrimaryButton>
-                                   <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
-                               </PrimaryButton>
-                           </div>
-                            <h1 class="text-emerald-600">
-<!--                                {{vulnerabilites[0].vendorProject}}-->
+                        <div v-for="vulnerability in vulnerabilites" :key="vulnerability.cveID" class="flex flex-col gap-3 bg-stone-800 p-8 rounded-2xl border-2 border-stone-800 hover:border-2 hover:border-stone-700">
+                           <h1 class="text-white font-bold text-3xl">
+                                {{vulnerability.vulnerabilityName}}
+                           </h1>
+                            <h1 class="text-emerald-600 font-bold">
+                                {{vulnerability.cveID}}
+                            </h1>
+                            <h1 class="text-emerald-600 font-bold">
+                                {{vulnerability.cwes}}
                             </h1>
                             <h2 class="text-stone-300">
-<!--                                {{vulnerabilites[0].dateAdded}}-->
+                                <strong>Product: </strong>
+                                {{vulnerability.product}}
+                            </h2>
+                            <h2 class="text-stone-300">
+                                <strong>Date Added: </strong>
+                                {{vulnerability.dateAdded}}
                             </h2>
                             <p class="text-stone-300">
-<!--                                {{vulnerabilites[0].shortDescription}}-->
+                                <strong>Short Description: </strong>
+                                {{vulnerability.shortDescription}}
                             </p>
-                            <Link class="text-emerald-600">
-                                see poc
-                            </Link>
-                            <Link class="text-emerald-600">
-                                see latest news
-                            </Link>
+                            <p class="text-stone-300">
+                                <strong>Mitigation: </strong>
+                                {{vulnerability.requiredAction}}
+                            </p>
+                            <a class="text-emerald-600 hover:text-emerald-500" :href="pocUrl + vulnerability.cveID + pocUrlEnd" target="_blank" rel="noopener noreferrer">
+                                See Poc
+                            </a>
+                            <a class="text-emerald-600 hover:text-emerald-500" :href="newsUrl + vulnerability.cveID" target="_blank" rel="noopener noreferrer">
+                                See Latest News
+                            </a>
+                            <div class="flex flex-row mt-6 gap-5">
+                                <LinkButton url="https://www.cve.org/CVERecord?id=" :cveID="vulnerability.cveID" target="_blank" rel="noopener noreferrer">
+                                    See CVE Details
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+                                </LinkButton>
+
+<!--                                CWE Button-->
+<!--                                <LinkButton url="https://www.cve.org/CVERecord?id=" :cveID="vulnerability.cveID">-->
+<!--                                    See CWE Details-->
+<!--                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>-->
+<!--                                </LinkButton>-->
+
+                            </div>
                         </div>
-
-
                     </div>
                 </main>
 
@@ -106,3 +112,52 @@ export default {
         </div>
     </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+    data(){
+        return {
+            cwe: [],
+            newsUrl:'',
+            pocUrl: '',
+            pocUrlEnd: '',
+            vulnerabilites: [],
+            catalogSource: '',
+            catalogVersion: '',
+            catalogDateReleased: '',
+            catalogCount: '',
+            loading: true,
+            error: null,
+        };
+    },
+    mounted() {
+        this.fetchVulnerabilites();
+    },
+    methods:{
+        async fetchVulnerabilites(){
+            try{
+                const response = await axios.get('http://localhost:8000/api/vulnerabilites');
+                if(response.status === 200){
+                    this.vulnerabilites = response.data.vulnerabilities;
+                    this.catalogSource = response.data.title;
+                    this.catalogVersion = response.data.catalogVersion;
+                    this.catalogDateReleased = response.data.dateReleased;
+
+                    this.catalogCount = response.data.count;
+                    this.pocUrl = "https://github.com/search?q="
+                    this.pocUrlEnd = "+in:file"
+                    this.newsUrl = "https://news.google.com/search?q="
+                }
+            }catch(error){
+                this.error = 'Failed to fetch data';
+                console.error ('Error fetching data', error);
+            }finally {
+                this.loading = false;
+            }
+
+        }
+    }
+}
+</script>
