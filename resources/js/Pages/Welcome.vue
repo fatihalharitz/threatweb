@@ -1,9 +1,7 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LinkButton from "@/Components/LinkButton.vue";
-
-
 </script>
 
 <template>
@@ -11,6 +9,8 @@ import LinkButton from "@/Components/LinkButton.vue";
     <div class="bg-gray-50 text-black/50 dark:bg-stone-900 dark:text-white/50">
          <div class="relative min-h-screen flex flex-col items-center justify-between selection:bg-[#FF2D20] selection:text-white">
             <div class="relative w-screen max-w-screen-xl">
+
+<!--                HEADER-->
                 <header class="flex flex-row items-center justify-between py-6 bg-stone-900 px-6 border-b-2 border-stone-700">
                     <div class="flex">
                         <h1 class="text-2xl text-emerald-400 font-medium">Threat Web</h1>
@@ -19,7 +19,9 @@ import LinkButton from "@/Components/LinkButton.vue";
 <!--                    </nav>-->
                 </header>
 
+<!--                MAIN-->
                 <main class="mt-10">
+
 <!--                    Data information Status-->
                     <div>
                         <div class="mx-32 px-14 py-6 bg-stone-800 flex flex-row rounded-2xl">
@@ -53,9 +55,11 @@ import LinkButton from "@/Components/LinkButton.vue";
                         </form>
                     </div>
 
+
+<!--                    Card Container-->
                     <div class="flex flex-col mt-10 mx-20 gap-8">
 
-    <!--                        Card per CVE-->
+                        <!-- Card per CVE-->
                         <div v-for="vulnerability in vulnerabilites" :key="vulnerability.cveID" class="flex flex-col gap-3 bg-stone-800 p-8 rounded-2xl border-2 border-stone-800 hover:border-2 hover:border-stone-700">
                            <h1 class="text-white font-bold text-3xl">
                                 {{vulnerability.vulnerabilityName}}
@@ -66,6 +70,10 @@ import LinkButton from "@/Components/LinkButton.vue";
                             <h1 class="text-emerald-600 font-bold">
                                 {{vulnerability.cwes}}
                             </h1>
+                            <h2 class="text-stone-300">
+                                <strong>Vendor Project: </strong>
+                                {{vulnerability.vendorProject}}
+                            </h2>
                             <h2 class="text-stone-300">
                                 <strong>Product: </strong>
                                 {{vulnerability.product}}
@@ -85,7 +93,7 @@ import LinkButton from "@/Components/LinkButton.vue";
                             <a class="text-emerald-600 hover:text-emerald-500" :href="pocUrl + vulnerability.cveID + pocUrlEnd" target="_blank" rel="noopener noreferrer">
                                 See Poc
                             </a>
-                            <a class="text-emerald-600 hover:text-emerald-500" :href="newsUrl + vulnerability.cveID" target="_blank" rel="noopener noreferrer">
+                            <a class="text-emerald-600 hover:text-emerald-500" :href="newsUrl + vulnerability.vulnerabilityName +' '+ vulnerability.cveID" target="_blank" rel="noopener noreferrer">
                                 See Latest News
                             </a>
                             <div class="flex flex-row mt-6 gap-5">
@@ -93,21 +101,16 @@ import LinkButton from "@/Components/LinkButton.vue";
                                     See CVE Details
                                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
                                 </LinkButton>
-
-<!--                                CWE Button-->
-<!--                                <LinkButton url="https://www.cve.org/CVERecord?id=" :cveID="vulnerability.cveID">-->
-<!--                                    See CWE Details-->
-<!--                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>-->
-<!--                                </LinkButton>-->
-
                             </div>
                         </div>
+<!--                        End of CVE Card-->
+
                     </div>
                 </main>
 
-                <footer class="py-16 text-center text-sm text-black dark:text-white/70">
-
-                </footer>
+<!--                <footer class="py-16 text-center text-sm text-black dark:text-white/70">-->
+<!--                        -->
+<!--                </footer>-->
             </div>
         </div>
     </div>
